@@ -1,0 +1,3 @@
+import libs = libnode-api-headers%lib{node-api-headers}
+
+exe{driver}: {h c}{**} $libs testscript{**}
