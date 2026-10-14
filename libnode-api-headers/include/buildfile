@@ -39,3 +39,14 @@ if ($install.root != [null])
       [path] $ins_def/node_api.def
   }
 }
+
+# Make sure headers installed into, say, /usr/include/node/ can be included
+# as <node_api.h> by overriding the header search path in the generated
+# pkg-config files.
+#
+lib{node-api-headers}: c.pkgconfig.include = include/node/
+
+# Install into the node/ subdirectory of, say, /usr/include/, the same as
+# the Debian and Fedora Node.js development packages.
+#
+h{*}: install = include/node/
