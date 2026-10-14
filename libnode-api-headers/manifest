@@ -4,13 +4,15 @@ version: 1.9.0-a.0.z
 type: lib,binless
 language: c
 project: node-api-headers
-summary: - **[Introduction](#introduction)**
+summary: Node-API C headers for building Node.js native addons
 license: MIT ; MIT License.
 description-file: README.md
 package-description-file: PACKAGE-README.md
 changes-file: CHANGELOG.md
-url: https://example.org/upstream
-email: upstream@example.org
+url: https://github.com/nodejs/node-api-headers
+doc-url: https://nodejs.org/api/n-api.html
+src-url: https://github.com/nodejs/node-api-headers
+topics: Node.js, Node-API, native addon
 package-url: https://github.com/build2-packaging/node-api-headers
 package-email: packaging@build2.org ; Mailing list.
 depends: * build2 >= 0.18.0
