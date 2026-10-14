@@ -1,73 +1,42 @@
-#include <stdio.h>
-#include <errno.h>
-#include <string.h>
+#include <stddef.h>
+#include <stdint.h>
 
-#include <node-api-headers.h>
+#include <node_api.h>
 
 #undef NDEBUG
 #include <assert.h>
 
-#ifdef _WIN32
-#define tmpfile mytmpfile
-static FILE *mytmpfile ();
-#endif
+/* Define the module initializer and the API version query with the
+ * registration macros, the same way an addon does. Neither refers to the
+ * functions that the host process provides, so we can call both directly.
+ */
+NAPI_MODULE_INIT ()
+{
+  (void) env;
+  return exports;
+}
 
 int main ()
 {
-  char b[256];
+  /* Default API version.
+   */
+  assert (NAPI_VERSION == 8);
+  assert (NODE_API_MODULE_GET_API_VERSION () == NAPI_VERSION);
 
-  /* Basics.
+  /* Module initializer.
    */
   {
-    FILE *o = tmpfile ();
-    assert (say_hello (o, "World") > 0);
-    rewind (o);
-    assert (fread (b, 1, sizeof (b), o) == 14 &&
-            strncmp (b, "Hello, World!\n", 14) == 0);
-    fclose (o);
+    int x;
+    napi_value e = (napi_value) &x;
+    assert (NAPI_MODULE_INITIALIZER ((napi_env) 0, e) == e);
   }
 
-  /* Empty name.
+  /* Types and constants.
    */
-  {
-    FILE *o = tmpfile ();
-    assert (say_hello (o, "") < 0 && errno == EINVAL);
-    fclose (o);
-  }
+  assert (napi_ok == 0);
+  assert (NAPI_AUTO_LENGTH == SIZE_MAX);
+  assert (sizeof (napi_value) == sizeof (void*));
+  assert ((napi_default_jsproperty & napi_writable) != 0);
 
   return 0;
 }
-
-#ifdef _WIN32
-#include <windows.h>
-#include <fcntl.h>
-#include <io.h>
-
-FILE *mytmpfile ()
-{
-  char d[MAX_PATH + 1], p[MAX_PATH + 1];
-  if (GetTempPathA (sizeof (d), d) == 0 ||
-      GetTempFileNameA (d, "tmp", 0, p) == 0)
-    return NULL;
-
-  HANDLE h = CreateFileA (p,
-                          GENERIC_READ | GENERIC_WRITE,
-                          0,
-                          NULL,
-                          CREATE_ALWAYS,
-                          FILE_ATTRIBUTE_TEMPORARY | FILE_FLAG_DELETE_ON_CLOSE,
-                          NULL);
-  if (h == INVALID_HANDLE_VALUE)
-    return NULL;
-
-  int fd = _open_osfhandle ((intptr_t) h, _O_RDWR);
-  if (fd == -1)
-    return NULL;
-
-  FILE *f = _fdopen (fd, "wb+");
-  if (f == NULL)
-    _close (fd);
-
-  return f;
-}
-#endif
