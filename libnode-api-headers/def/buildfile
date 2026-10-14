@@ -1,0 +1,5 @@
+./: def{*}
+
+# Install into, say, /usr/share/libnode-api-headers/.
+#
+def{*}: install = data/

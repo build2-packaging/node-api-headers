@@ -42,5 +42,15 @@ cxx.poptions += -DNAPI_VERSION=10
 
 The Node-API functions are provided by the process that loads the addon
 (`node`, `electron`, etc) and this package has nothing to link. On Windows the
-addon is linked against an import library for the host executable, which
-upstream describes with the `.def` files in its `def/` directory.
+addon is linked against an import library for the host executable, which is
+produced from the upstream module definition files, `node_api.def` (complete
+Node-API) or `js_native_api.def` (ECMAScript features only). The package
+installs them into, say, `/usr/share/libnode-api-headers/` and conveys their
+paths in the library metadata:
+
+```
+import! [metadata, rule_hint=cxx.link] \
+  libs = libnode-api-headers%lib{node-api-headers}
+
+def = $($libs: libnode_api_headers.node_api_def)
+```

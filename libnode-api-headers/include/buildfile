@@ -13,13 +13,29 @@ lib{node-api-headers}:
   c.export.poptions = "-I$src_pfx"
 }
 
-# Make sure headers installed into, say, /usr/include/node/ can be included
-# as <node_api.h> by overriding the header search path in the generated
-# pkg-config files.
+# Convey the location of the module definition files, which a Windows addon
+# needs to produce the import library for the host executable.
 #
-lib{node-api-headers}: c.pkgconfig.include = include/node/
+src_def = [dir_path] $src_root/def/
 
-# Install into the node/ subdirectory of, say, /usr/include/, the same as
-# the Debian and Fedora Node.js development packages.
-#
-h{*}: install = include/node/
+lib{node-api-headers}:
+{
+  export.metadata = 1 libnode_api_headers
+
+  libnode_api_headers.js_native_api_def = [path] $src_def/js_native_api.def
+  libnode_api_headers.node_api_def      = [path] $src_def/node_api.def
+}
+
+if ($install.root != [null])
+{
+  ins_def = $install.resolve([dir_path] data/)
+
+  lib{node-api-headers}:
+  {
+    libnode_api_headers.js_native_api_def.for_install = \
+      [path] $ins_def/js_native_api.def
+
+    libnode_api_headers.node_api_def.for_install = \
+      [path] $ins_def/node_api.def
+  }
+}
