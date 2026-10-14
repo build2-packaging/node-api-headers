@@ -1,6 +1,6 @@
 : 1
 name: libnode-api-headers
-version: 1.9.0-a.0.z
+version: 1.9.0
 type: lib,binless
 language: c
 project: node-api-headers
